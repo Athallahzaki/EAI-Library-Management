@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibManager - Mini Library Management System</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons (CDN) for premium look -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <i data-lucide="book-open" class="brand-icon"></i>
+        <span class="brand-name">LibManager</span>
+      </div>
+      <nav class="sidebar-menu">
+        <button class="menu-item active" id="menu-dashboard" data-tab="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="menu-item" id="menu-books" data-tab="books">
+          <i data-lucide="book"></i>
+          <span>Buku</span>
+        </button>
+        <button class="menu-item" id="menu-members" data-tab="members">
+          <i data-lucide="users"></i>
+          <span>Anggota</span>
+        </button>
+        <button class="menu-item" id="menu-categories" data-tab="categories">
+          <i data-lucide="tag"></i>
+          <span>Kategori</span>
+        </button>
+        <button class="menu-item" id="menu-borrowings" data-tab="borrowings">
+          <i data-lucide="arrow-left-right"></i>
+          <span>Peminjaman</span>
+        </button>
+        <button class="menu-item" id="menu-fines" data-tab="fines">
+          <i data-lucide="dollar-sign"></i>
+          <span>Denda</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="status-dot online"></span>
+          <span>GraphQL Connected</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="main-header">
+        <div class="header-title-area">
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-subtitle" class="text-secondary">Statistik perpustakaan dan ringkasan aktivitas.</p>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i data-lucide="moon" id="theme-icon"></i>
+          </button>
+          <div class="user-profile">
+            <span class="user-avatar">AD</span>
+            <span class="user-name">Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="content-view-container">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="content-view active">
+          <!-- Quick Statistics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon bg-primary-soft">
+                <i data-lucide="book" class="text-primary"></i>
+              </div>
+              <div class="stat-data">
+                <span class="stat-label">Total Buku</span>
+                <h3 id="stat-total-books">0</h3>
+                <span class="stat-subtext" id="stat-avail-books">0 tersedia</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-success-soft">
+                <i data-lucide="users" class="text-success"></i>
+              </div>
+              <div class="stat-data">
+                <span class="stat-label">Total Anggota</span>
+                <h3 id="stat-total-members">0</h3>
+                <span class="stat-subtext">Anggota terdaftar</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-warning-soft">
+                <i data-lucide="arrow-up-right" class="text-warning"></i>
+              </div>
+              <div class="stat-data">
+                <span class="stat-label">Peminjaman Aktif</span>
+                <h3 id="stat-active-loans">0</h3>
+                <span class="stat-subtext">Buku sedang dipinjam</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon bg-danger-soft">
+                <i data-lucide="dollar-sign" class="text-danger"></i>
+              </div>
+              <div class="stat-data">
+                <span class="stat-label">Denda Belum Dibayar</span>
+                <h3 id="stat-unpaid-fines">Rp 0</h3>
+                <span class="stat-subtext" id="stat-fines-count">0 transaksi denda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity Section -->
+          <div class="dashboard-details">
+            <div class="card recent-borrowings-card">
+              <div class="card-header">
+                <h3>Aktivitas Peminjaman Terbaru</h3>
+                <button class="btn btn-text btn-view-all-borrowings">Lihat Semua</button>
+              </div>
+              <div class="table-container">
+                <table class="data-table" id="recent-borrowings-table">
+                  <thead>
+                    <tr>
+                      <th>Anggota</th>
+                      <th>Buku</th>
+                      <th>Tgl Pinjam</th>
+                      <th>Tgl Kembali</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Loaded dynamically -->
+                    <tr>
+                      <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOOKS VIEW -->
+        <section id="view-books" class="content-view">
+          <div class="toolbar">
+            <div class="search-box">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="search-book-title" placeholder="Cari judul buku...">
+            </div>
+            <div class="filters">
+              <select id="filter-book-category">
+                <option value="">Semua Kategori</option>
+                <!-- Loaded dynamically -->
+              </select>
+              <button class="btn btn-primary" id="btn-open-add-book">
+                <i data-lucide="plus"></i>
+                <span>Tambah Buku</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="books-grid" id="books-grid-container">
+            <!-- Loaded dynamically -->
+            <div class="loading-state">
+              <span class="spinner"></span>
+              <p>Memuat daftar buku...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MEMBERS VIEW -->
+        <section id="view-members" class="content-view">
+          <div class="toolbar toolbar-end">
+            <button class="btn btn-primary" id="btn-open-add-member">
+              <i data-lucide="plus"></i>
+              <span>Tambah Anggota</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="members-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nama Lengkap</th>
+                    <th>Nomor Telepon</th>
+                    <th>Peminjaman Aktif</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loaded dynamically -->
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-4">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- CATEGORIES VIEW -->
+        <section id="view-categories" class="content-view">
+          <div class="toolbar toolbar-end">
+            <button class="btn btn-primary" id="btn-open-add-category">
+              <i data-lucide="plus"></i>
+              <span>Tambah Kategori</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="categories-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nama Kategori</th>
+                    <th>Jumlah Koleksi Buku</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loaded dynamically -->
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-4">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- BORROWINGS VIEW -->
+        <section id="view-borrowings" class="content-view">
+          <div class="toolbar toolbar-end">
+            <button class="btn btn-primary" id="btn-open-borrow-book">
+              <i data-lucide="arrow-left-right"></i>
+              <span>Pinjam Buku</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="borrowings-table">
+                <thead>
+                  <tr>
+                    <th>Peminjam</th>
+                    <th>Buku</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Batas Pengembalian</th>
+                    <th>Tanggal Pengembalian</th>
+                    <th>Denda</th>
+                    <th>Status</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loaded dynamically -->
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- FINES VIEW -->
+        <section id="view-fines" class="content-view">
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="fines-table">
+                <thead>
+                  <tr>
+                    <th>ID Denda</th>
+                    <th>Peminjam</th>
+                    <th>Buku</th>
+                    <th>Jumlah Denda</th>
+                    <th>Status</th>
+                    <th>Tgl Bayar</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Loaded dynamically -->
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">Memuat data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- ADD BOOK MODAL -->
+  <div class="modal-overlay" id="modal-add-book">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Tambah Buku Baru</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-add-book" class="modal-form">
+        <!-- ISBN mode selector -->
+        <div class="form-group">
+          <label>Metode Input</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="input-mode" value="manual" checked>
+              <span>Input Manual</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="input-mode" value="isbn">
+              <span>Import via ISBN (Google Books)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ISBN Field (Shown in both, but required for import) -->
+        <div class="form-group" id="group-isbn">
+          <label for="book-isbn">ISBN</label>
+          <div class="input-with-button">
+            <input type="text" id="book-isbn" placeholder="Contoh: 9780132350884">
+            <button type="button" class="btn btn-secondary" id="btn-import-isbn" disabled>
+              <i data-lucide="search"></i>
+              <span>Cari API</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Manual Fields (Toggled by selector) -->
+        <div id="manual-fields">
+          <div class="form-group">
+            <label for="book-title">Judul Buku *</label>
+            <input type="text" id="book-title" placeholder="Masukkan judul buku" required>
+          </div>
+          <div class="form-group">
+            <label for="book-authors">Penulis (pisahkan dengan koma) *</label>
+            <input type="text" id="book-authors" placeholder="Contoh: Robert C. Martin, Martin Fowler" required>
+          </div>
+        </div>
+
+        <!-- Shared Fields (Always shown) -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="book-stock">Jumlah Stok *</label>
+            <input type="number" id="book-stock" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label for="book-category-select">Kategori *</label>
+            <select id="book-category-select" required>
+              <option value="">Pilih Kategori</option>
+              <!-- Loaded dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-book">Simpan Buku</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT STOCK MODAL -->
+  <div class="modal-overlay" id="modal-edit-stock">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3>Update Stok Buku</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-edit-stock" class="modal-form">
+        <input type="hidden" id="edit-stock-book-id">
+        <div class="form-group">
+          <label id="edit-stock-title">Judul Buku</label>
+          <input type="number" id="edit-stock-value" min="0" required>
+          <small class="text-secondary" id="edit-stock-info"></small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD MEMBER MODAL -->
+  <div class="modal-overlay" id="modal-add-member">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3>Tambah Anggota Baru</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-add-member" class="modal-form">
+        <div class="form-group">
+          <label for="member-name">Nama Lengkap *</label>
+          <input type="text" id="member-name" placeholder="Contoh: Ahmad Dhani" required>
+        </div>
+        <div class="form-group">
+          <label for="member-phone">Nomor Telepon *</label>
+          <input type="text" id="member-phone" placeholder="Contoh: 081234567890" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD CATEGORY MODAL -->
+  <div class="modal-overlay" id="modal-add-category">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3>Tambah Kategori Baru</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-add-category" class="modal-form">
+        <div class="form-group">
+          <label for="category-name">Nama Kategori *</label>
+          <input type="text" id="category-name" placeholder="Contoh: Fiksi, Sains, Sejarah" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- BORROW BOOK MODAL -->
+  <div class="modal-overlay" id="modal-borrow-book">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3>Transaksi Pinjam Buku</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="form-borrow-book" class="modal-form">
+        <div class="form-group">
+          <label for="borrow-member-select">Pilih Anggota *</label>
+          <select id="borrow-member-select" required>
+            <option value="">Pilih Anggota</option>
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="borrow-book-select">Pilih Buku *</label>
+          <select id="borrow-book-select" required>
+            <option value="">Pilih Buku</option>
+            <!-- Loaded dynamically -->
+          </select>
+          <small class="text-secondary">Hanya menampilkan buku yang stoknya tersedia.</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Pinjam</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Script logic -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

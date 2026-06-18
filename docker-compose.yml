@@ -1,0 +1,54 @@
+services:
+  # Frontend Client
+  client:
+    image: nginx:alpine
+    container_name: library-client
+    restart: unless-stopped
+    ports:
+      - "20005:80"
+    volumes:
+      - ./client:/var/www/public
+      - ./compose/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - library-network
+
+  # API Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: library_backend
+    container_name: library-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - library-network
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: library-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASSWORD
+    volumes:
+      - ./compose/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - dbdata:/var/lib/mysql
+    networks:
+      - library-network
+
+networks:
+  library-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
