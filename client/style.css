@@ -236,8 +236,8 @@ body {
 .status-indicator.loading .status-dot::after {
   content: '';
   position: absolute;
-  top: -4px;
-  left: -4px;
+  top: -5px;
+  left: -5px;
   width: 16px;
   height: 16px;
   border-radius: 50%;

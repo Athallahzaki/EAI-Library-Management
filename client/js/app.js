@@ -107,15 +107,25 @@ function showToast(message, type = 'success') {
 }
 
 // Global Loader toggle
-function setGlobalLoading(isLoading) {
+function setGlobalLoading(state) {
   const indicators = document.querySelectorAll('.status-indicator');
   indicators.forEach(ind => {
-    if (isLoading) {
+    const dot = ind.querySelector('.status-dot');
+    const msg = ind.querySelector('.status-mesg');
+    if (state === true || state === 'loading') {
       ind.classList.add('loading');
-      ind.querySelector('.status-dot').style.background = 'var(--warning-color)';
-    } else {
+      dot.style.background = 'var(--warning-color)';
+      msg.textContent = "Connecting to GraphQL";
+    } 
+    else if (state === 'error') {
       ind.classList.remove('loading');
-      ind.querySelector('.status-dot').style.background = 'var(--success-color)';
+      dot.style.background = 'var(--danger-color)';
+      msg.textContent = "Failed to connect to GraphQL";
+    } 
+    else {
+      ind.classList.remove('loading');
+      dot.style.background = 'var(--success-color)';
+      msg.textContent = "GraphQL Connected";
     }
   });
 }
@@ -239,11 +249,10 @@ async function renderDashboard() {
         recentTableBody.appendChild(row);
       });
     }
-
+    setGlobalLoading(false);
   } catch (error) {
     showToast(`Gagal memuat dashboard: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
@@ -405,11 +414,11 @@ async function renderBooks() {
         }
       });
     });
-
+    setGlobalLoading(false);
+    
   } catch (error) {
     showToast(`Gagal memuat buku: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
@@ -474,11 +483,11 @@ async function renderMembers() {
         }
       });
     });
+    setGlobalLoading(false);
 
   } catch (error) {
     showToast(`Gagal memuat anggota: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
@@ -542,11 +551,11 @@ async function renderCategories() {
         }
       });
     });
+    setGlobalLoading(false);
 
   } catch (error) {
     showToast(`Gagal memuat kategori: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
@@ -657,11 +666,11 @@ async function renderBorrowings() {
         }
       });
     });
+    setGlobalLoading(false);
 
   } catch (error) {
     showToast(`Gagal memuat transaksi peminjaman: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
@@ -743,11 +752,11 @@ async function renderFines() {
         }
       });
     });
-
+    setGlobalLoading(false);
+    
   } catch (error) {
     showToast(`Gagal memuat denda: ${error.message}`, 'error');
-  } finally {
-    setGlobalLoading(false);
+    setGlobalLoading('error');
   }
 }
 
