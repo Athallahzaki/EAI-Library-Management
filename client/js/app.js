@@ -234,9 +234,20 @@ async function renderDashboard() {
         </tr>
       `;
     } else {
+      const today = new Date();
       recentBorrowings.forEach(item => {
-        const statusClass = item.status === 'BORROWED' ? 'badge-warning' : 'badge-success';
-        const statusLabel = item.status === 'BORROWED' ? 'Dipinjam' : 'Dikembalikan';
+        const dueDate = new Date(parseInt(item.dueDate));
+        const isReturned = item.status === 'RETURNED';
+        let statusClass = 'badge-warning';
+        let statusLabel = 'Dipinjam';
+
+        if (isReturned) {
+          statusClass = 'badge-success';
+          statusLabel = 'Dikembalikan';
+        } else if (today > dueDate) {
+          statusClass = 'badge-danger';
+          statusLabel = 'Terlambat';
+        }
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -601,11 +612,22 @@ async function renderBorrowings() {
       return;
     }
 
+    const today = new Date();
+
     data.borrowings.forEach(item => {
+      const dueDate = new Date(parseInt(item.dueDate));
       const isReturned = item.status === 'RETURNED';
-      const statusClass = isReturned ? 'badge-success' : 'badge-warning';
-      const statusLabel = isReturned ? 'Kembali' : 'Dipinjam';
-      
+      let statusClass = 'badge-warning';
+      let statusLabel = 'Dipinjam';
+
+      if (isReturned) {
+        statusClass = 'badge-success';
+        statusLabel = 'Kembali';
+      } else if (today > dueDate) {
+        statusClass = 'badge-danger';
+        statusLabel = 'Terlambat';
+      }
+
       let actionHtml = '';
       if (!isReturned) {
         actionHtml = `
