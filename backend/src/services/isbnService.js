@@ -11,7 +11,7 @@ async function fetchBook(isbn) {
         {
           params: {
             q: `isbn:${isbn}`,
-            key: KEY
+            ...(KEY && { key: KEY })
           }
         }
       );

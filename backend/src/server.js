@@ -7,7 +7,7 @@ const { expressMiddleware } = require("@as-integrations/express5");
 
 require('dotenv').config();
 
-const HOST = process.env.API_HOST || "http://localhost";
+const HOST = process.env.API_HOST || "localhost";
 const PORT = process.env.API_PORT || 4000;
 
 const typeDefs = require("./schemas");
@@ -32,7 +32,7 @@ async function startServer() {
   );
 
   app.listen(PORT, () => {
-    console.log(`Server running at ${HOST}:${PORT}/graphql`);
+    console.log(`Server running at http://${HOST}:${PORT}/graphql`);
   });
 }
 
