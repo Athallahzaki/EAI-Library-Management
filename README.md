@@ -93,7 +93,7 @@ But it is recommended to keep everything as-is if you dont know what you are doi
 ```
 ## Step 6: Run the Containers
 
-Run this code in the terminal to start all containers in docker.
+Run this command in the terminal to start all containers in docker.
 
 ```bash
   docker compose up -d --build
